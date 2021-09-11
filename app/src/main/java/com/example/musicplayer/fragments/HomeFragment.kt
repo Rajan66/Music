@@ -1,15 +1,25 @@
 package com.example.musicplayer.fragments
 
+import android.content.ContentResolver
+import android.content.Context
+import android.database.Cursor
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Log
+import android.util.Size
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Adapter
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.musicplayer.R
 import com.example.musicplayer.adapters.TrackRVAdapter
 import com.example.musicplayer.utils.Track
+import java.lang.Exception
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -26,8 +36,10 @@ class HomeFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    private var trackList: ArrayList<Track>? = null
+    private var trackList: ArrayList<Track> = ArrayList()
     lateinit var trackRecyclerView : RecyclerView
+
+    private val TAG = "HomeFragment"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,24 +59,59 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        trackRecyclerView =  view.findViewById(R.id.rv_music)
-        if(trackList!=null){
-            
-        }else{
-            Toast.makeText(context,"No songs to play.... lol",Toast.LENGTH_LONG).show()
+        trackRecyclerView = view.findViewById(R.id.rv_music)
+        trackList = getTrackList()
+        if (trackList != null) {
+            val adapter = TrackRVAdapter(trackList, requireContext())
+            trackRecyclerView.layoutManager = LinearLayoutManager(activity)
+            trackRecyclerView.adapter = adapter
+            Log.i(TAG, "onViewCreated: Not Null " + adapter)
+        } else {
+            Toast.makeText(requireContext(), "No songs to play.... lol", Toast.LENGTH_LONG).show()
         }
     }
 
+    private fun getTrackList():ArrayList<Track>{
+        var songList: ArrayList<Track> = ArrayList()
+        var songPath: ArrayList<String> = ArrayList()
+        val allSongUri:Uri =MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+
+        val projection: Array<String> = arrayOf(MediaStore.Audio.Media.DATA,MediaStore.Audio.Media.TRACK,
+                    MediaStore.Audio.Media.DISPLAY_NAME,MediaStore.Audio.Media._ID)
+
+        val cursor: Cursor? = requireContext().contentResolver.query(allSongUri, projection, null,null,null)
+
+
+        try {
+            if(cursor != null){
+                if(cursor.moveToFirst()){
+                    do{
+                        var track: Track? = null
+                        val songName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME))
+//                        val artistName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST))
+                        val dataPath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA))
+//                        val albumImageUrl = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AlbumColumns.ALBUM_ART))
+//                        val albumArt = resolver.loadThumbnail(allSongUri,Size(100,100),null)
+
+                        Log.i(TAG, "getTrackList, Song Name: $songName")
+//                        Log.i(TAG, "getTrackList, Artist Name: $artistName")
+                        Log.i(TAG, "getTrackList, Song Path: $dataPath")
+
+
+                        val songInfo = Track(songName,null,dataPath,null)
+                        songList.add(songInfo)
+
+                    }while(cursor.moveToNext())
+                }
+            }
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+
+        return songList
+    }
+
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment HomeFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             HomeFragment().apply {

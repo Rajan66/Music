@@ -1,13 +1,20 @@
 package com.example.musicplayer
 
+import android.content.ContentValues.TAG
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.musicplayer.fragments.FavoriteFragment
 import com.example.musicplayer.fragments.HomeFragment
 import com.example.musicplayer.fragments.SettingFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.util.jar.Manifest
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +27,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        getPermit()
 
         bottomNavigationView = findViewById(R.id.bottom_navigation_bar)
         bottomNavigationView.setOnItemSelectedListener {
@@ -40,5 +49,31 @@ class MainActivity : AppCompatActivity() {
             transaction.replace(R.id.fragment_container, fragment)
             transaction.commit()
         }
+    }
+
+    private fun getPermit() {
+        val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()){ isGranted:Boolean ->
+            if (isGranted){
+                Log.i(TAG, "getPermit: Granted")
+            }else{
+                Log.i(TAG,"getPermit: Failure")
+            }
+
+        }
+
+
+        when {
+            ContextCompat.checkSelfPermission(
+                applicationContext, android.Manifest.permission
+                    .READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED -> {
+            }
+
+            else -> {
+                requestPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+        }
+
+
     }
 }

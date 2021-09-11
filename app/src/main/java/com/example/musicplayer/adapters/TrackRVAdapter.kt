@@ -1,6 +1,7 @@
 package com.example.musicplayer.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import com.example.musicplayer.utils.Track
 class TrackRVAdapter(private var trackList: ArrayList<Track>, var context: Context) :
     RecyclerView.Adapter<TrackRVAdapter.TrackHolder>() {
 
+    private val TAG = "Adapter"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackHolder {
         val itemView =  LayoutInflater.from(parent.context).inflate(R.layout.rv_music_item,parent,false)
@@ -24,7 +26,9 @@ class TrackRVAdapter(private var trackList: ArrayList<Track>, var context: Conte
         val currentItem = trackList[position]
 
         holder.artistName.text = currentItem.artistName
+        Log.i(TAG, "onBindViewHolder: " + currentItem.artistName)
         holder.songName.text = currentItem.songName
+        Log.i(TAG, "onBindViewHolder: " + currentItem.songName)
         Glide.with(context)
             .load(currentItem.albumImageUrl)
             .centerCrop()
