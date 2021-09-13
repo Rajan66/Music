@@ -11,4 +11,7 @@
     <color name="black_shade">#333333</color>
     <color name="white_shade">#f0f6f0</color>
     <color name="black_shade_1">#414241</color>
+    <color name="dark_blue_shade">#110c22</color>
+    <color name="gray_shade">#a0a0a0</color>
+    <color name="black_coral_pearl">#404450</color>
 </resources>
