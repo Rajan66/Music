@@ -63,9 +63,8 @@ class HomeFragment : Fragment() {
         trackList = getTrackList()
         if (trackList != null) {
             val adapter = TrackRVAdapter(trackList, requireContext())
-            trackRecyclerView.layoutManager = LinearLayoutManager(activity)
             trackRecyclerView.adapter = adapter
-            Log.i(TAG, "onViewCreated: Not Null " + adapter)
+            Log.i(TAG, "onViewCreated: Not Null $adapter")
         } else {
             Toast.makeText(requireContext(), "No songs to play.... lol", Toast.LENGTH_LONG).show()
         }
@@ -76,8 +75,8 @@ class HomeFragment : Fragment() {
         var songPath: ArrayList<String> = ArrayList()
         val allSongUri:Uri =MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
 
-        val projection: Array<String> = arrayOf(MediaStore.Audio.Media.DATA,MediaStore.Audio.Media.TRACK,
-                    MediaStore.Audio.Media.DISPLAY_NAME,MediaStore.Audio.Media._ID)
+        val projection: Array<String> = arrayOf(MediaStore.Audio.Media.TRACK,MediaStore.Audio.Media.TITLE,
+                    MediaStore.Audio.Media._ID,MediaStore.Audio.Media.ARTIST)
 
         val cursor: Cursor? = requireContext().contentResolver.query(allSongUri, projection, null,null,null)
 
@@ -87,18 +86,14 @@ class HomeFragment : Fragment() {
                 if(cursor.moveToFirst()){
                     do{
                         var track: Track? = null
-                        val songName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME))
-//                        val artistName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST))
-                        val dataPath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA))
-//                        val albumImageUrl = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AlbumColumns.ALBUM_ART))
-//                        val albumArt = resolver.loadThumbnail(allSongUri,Size(100,100),null)
+                        val songName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE))
+                        val artistName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST))
+                        val songId = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID))
 
                         Log.i(TAG, "getTrackList, Song Name: $songName")
-//                        Log.i(TAG, "getTrackList, Artist Name: $artistName")
-                        Log.i(TAG, "getTrackList, Song Path: $dataPath")
+                        Log.i(TAG, "getTrackList, Artist Name: $artistName")
 
-
-                        val songInfo = Track(songName,null,dataPath,null)
+                        val songInfo = Track(songName,artistName,songId)
                         songList.add(songInfo)
 
                     }while(cursor.moveToNext())

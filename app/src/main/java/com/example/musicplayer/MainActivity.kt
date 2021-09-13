@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         getPermit()
+        displayFragment()
 
         bottomNavigationView = findViewById(R.id.bottom_navigation_bar)
         bottomNavigationView.setOnItemSelectedListener {
@@ -51,6 +52,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun displayFragment(){
+        val transaction =  supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.fragment_container,homeFragment)
+        transaction.commit()
+    }
+
     private fun getPermit() {
         val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()){ isGranted:Boolean ->
             if (isGranted){
@@ -61,19 +68,15 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-
-        when {
+        when (PackageManager.PERMISSION_GRANTED) {
             ContextCompat.checkSelfPermission(
                 applicationContext, android.Manifest.permission
                     .READ_EXTERNAL_STORAGE
-            ) == PackageManager.PERMISSION_GRANTED -> {
+            ) -> {
             }
-
             else -> {
                 requestPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
             }
         }
-
-
     }
 }

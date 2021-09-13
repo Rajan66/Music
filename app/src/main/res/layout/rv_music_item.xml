@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="65dp">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/card_view_music"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="1dp"
         android:backgroundTint="@color/black_shade_1"
-        android:elevation="2dp"
-        android:layout_marginBottom="3dp">
+        android:elevation="2dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -18,7 +18,7 @@
 
             <ImageView
                 android:id="@+id/image_view_song"
-                android:layout_width="80dp"
+                android:layout_width="76dp"
                 android:layout_height="75dp"
                 android:layout_margin="3dp"
                 android:padding="3dp"
@@ -28,21 +28,27 @@
                 android:id="@+id/text_view_song_name"
                 android:layout_width="wrap_content"
                 android:layout_height="25dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="3dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="0dp"
                 android:layout_toEndOf="@+id/image_view_song"
+                android:fontFamily="@font/delius"
+                android:maxLines="1"
                 android:text="Song Name"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/text_view_artist_name"
                 android:layout_width="wrap_content"
                 android:layout_height="25dp"
                 android:layout_below="@+id/text_view_song_name"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="5dp"
+                android:fontFamily="@font/delius"
                 android:layout_toEndOf="@+id/image_view_song"
+                android:maxLines="1"
                 android:text="Artist Name"
                 android:textColor="@color/white"
                 android:textSize="15sp" />

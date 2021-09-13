@@ -1,6 +1,7 @@
 package com.example.musicplayer.adapters
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -24,13 +25,15 @@ class TrackRVAdapter(private var trackList: ArrayList<Track>, var context: Conte
 
     override fun onBindViewHolder(holder: TrackHolder, position: Int) {
         val currentItem = trackList[position]
+        val songId = trackList[position].songId
+        val uri: Uri = Uri.parse("content://media/external/audio/media/$songId/albumart")
 
         holder.artistName.text = currentItem.artistName
         Log.i(TAG, "onBindViewHolder: " + currentItem.artistName)
         holder.songName.text = currentItem.songName
         Log.i(TAG, "onBindViewHolder: " + currentItem.songName)
         Glide.with(context)
-            .load(currentItem.albumImageUrl)
+            .load(uri)
             .centerCrop()
             .into(holder.albumImage)
 
