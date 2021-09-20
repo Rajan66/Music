@@ -8,12 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.musicplayer.R
+import com.example.musicplayer.utils.ItemOnClickListener
 import com.example.musicplayer.utils.Track
+import kotlin.reflect.KFunction1
 
-class TrackRVAdapter(private var trackList: ArrayList<Track>, var context: Context) :
+class TrackRVAdapter(private var trackList: ArrayList<Track>, var context: Context, var clickListener: ItemOnClickListener) :
     RecyclerView.Adapter<TrackRVAdapter.TrackHolder>() {
 
     private val TAG = "Adapter"
@@ -37,6 +40,11 @@ class TrackRVAdapter(private var trackList: ArrayList<Track>, var context: Conte
             .centerCrop()
             .into(holder.albumImage)
 
+
+        holder.cardView.setOnClickListener(View.OnClickListener {
+            clickListener.onClickListener(position)
+        })
+
     }
 
     override fun getItemCount(): Int {
@@ -48,7 +56,7 @@ class TrackRVAdapter(private var trackList: ArrayList<Track>, var context: Conte
         val songName: TextView = itemView.findViewById(R.id.text_view_song_name)
         val artistName: TextView = itemView.findViewById(R.id.text_view_artist_name)
         val albumImage: ImageView = itemView.findViewById(R.id.image_view_song)
-
+        val cardView: CardView = itemView.findViewById(R.id.card_view_music)
 
     }
 }

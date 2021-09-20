@@ -1,18 +1,25 @@
 package com.example.musicplayer
 
+import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
+import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.example.musicplayer.adapters.TrackRVAdapter
 import com.example.musicplayer.fragments.FavoriteFragment
 import com.example.musicplayer.fragments.HomeFragment
 import com.example.musicplayer.fragments.SettingFragment
+import com.example.musicplayer.utils.ItemOnClickListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.jar.Manifest
 
@@ -24,9 +31,30 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var bottomNavigationView: BottomNavigationView
 
+
+    companion object {
+        lateinit var cardViewPlayer: CardView
+        @SuppressLint("StaticFieldLeak")
+        lateinit var imageViewCurrentSong: ImageView
+        @SuppressLint("StaticFieldLeak")
+        lateinit var buttonPause: ImageView
+        @SuppressLint("StaticFieldLeak")
+        lateinit var buttonPlay: ImageView
+        @SuppressLint("StaticFieldLeak")
+        lateinit var textViewCurrentSong : TextView
+        lateinit var textViewCurrentArtist : TextView
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        cardViewPlayer = findViewById(R.id.card_view_player)
+        buttonPause = findViewById(R.id.button_pause)
+        buttonPlay = findViewById(R.id.button_play)
+        imageViewCurrentSong = findViewById(R.id.image_view_current_song)
+        textViewCurrentArtist = findViewById(R.id.text_view_current_artist)
+        textViewCurrentSong = findViewById(R.id.text_view_current_song)
 
         getPermit()
         displayFragment()
@@ -40,9 +68,9 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-
-
     }
+
+
 
     private fun changeFragment(fragment: Fragment) {
         if (fragment != null) {
