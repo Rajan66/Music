@@ -15,6 +15,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.cardview.widget.CardView
+import androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC
+import androidx.media.app.NotificationCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.musicplayer.MainActivity
@@ -30,6 +32,7 @@ import com.example.musicplayer.services.BackgroundSongService
 import com.example.musicplayer.utils.ItemOnClickListener
 import com.example.musicplayer.utils.Track
 import java.lang.Exception
+import java.util.concurrent.TimeUnit
 
 class HomeFragment : Fragment(), ItemOnClickListener,ServiceConnection {
 
@@ -42,6 +45,8 @@ class HomeFragment : Fragment(), ItemOnClickListener,ServiceConnection {
 
     private var songPosition: Int = 0
     private var isPlaying: Boolean = false
+    private var nextSong : Int = 0
+    private var prevSong : Int = 0
 
     companion object Player{
         private var mediaPlayer : MediaPlayer? = null
@@ -70,6 +75,23 @@ class HomeFragment : Fragment(), ItemOnClickListener,ServiceConnection {
         } else {
             Toast.makeText(requireContext(), "No songs to play.... lol", Toast.LENGTH_LONG).show()
         }
+//
+//        var notification = NotificationCompat.Builder(context, CHANNEL_ID)
+//            // Show controls on lock screen even when user hides sensitive content.
+//            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+//            .setSmallIcon(R.drawable.ic_stat_player)
+//            // Add media control buttons that invoke intents in your media service
+//            .addAction(R.drawable.ic_prev, "Previous", prevPendingIntent) // #0
+//            .addAction(R.drawable.ic_pause, "Pause", pausePendingIntent) // #1
+//            .addAction(R.drawable.ic_next, "Next", nextPendingIntent) // #2
+//            // Apply the media style template
+//            .setStyle(MediaNotificationCompat.MediaStyle()
+//                .setShowActionsInCompactView(1 /* #1: pause button \*/)
+//                .setMediaSession(mediaSession.getSessionToken()))
+//            .setContentTitle("Wonderful music")
+//            .setContentText("My Awesome Band")
+//            .setLargeIcon(trackList[songPosition].)
+//            .build()
     }
 
     private fun getTrackList():ArrayList<Track>{
@@ -78,7 +100,7 @@ class HomeFragment : Fragment(), ItemOnClickListener,ServiceConnection {
         val allSongUri:Uri =MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
 
         val projection: Array<String> = arrayOf(MediaStore.Audio.Media.TRACK,MediaStore.Audio.Media.TITLE,
-                    MediaStore.Audio.Media._ID,MediaStore.Audio.Media.ARTIST,MediaStore.Audio.Media.DATA)
+                    MediaStore.Audio.Media._ID,MediaStore.Audio.Media.ARTIST,MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.DURATION)
 
         val cursor: Cursor? = requireContext().contentResolver.query(allSongUri, projection, null,null,null)
 
@@ -92,11 +114,14 @@ class HomeFragment : Fragment(), ItemOnClickListener,ServiceConnection {
                         val artistName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST))
                         val songId = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID))
                         val songPath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA))
+                        val duration = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION))
 
                         Log.i(TAG, "getTrackList, Song Name: $songName")
                         Log.i(TAG, "getTrackList, Artist Name: $artistName")
+                        Log.i(TAG, "getTrackList, Artist Name: $duration")
 
-                        val songInfo = Track(songName,artistName,songId,songPath)
+
+                        val songInfo = Track(songName,artistName,songId,songPath, changeToMinutes(duration))
                         songList.add(songInfo)
 
                     }while(cursor.moveToNext())
@@ -110,19 +135,41 @@ class HomeFragment : Fragment(), ItemOnClickListener,ServiceConnection {
     }
 
     override fun onClickListener(position:Int) {
-        Toast.makeText(activity, trackList[position].songName + " clicked!", Toast.LENGTH_SHORT)
+        Toast.makeText(activity, trackList[position].songName + " playing!", Toast.LENGTH_SHORT)
             .show()
         songPosition = position
+        nextSong = songPosition + 1
+        prevSong = songPosition - 1
+
+
         setFields()
         stopSong()
         playSong()
-        createMediaPlayer()
+        createMediaPlayer(songPosition)
+
+        mediaPlayer!!.setOnSeekCompleteListener {
+            createMediaPlayer(nextSong)
+
+            this.songPosition = nextSong
+            nextSong = this.songPosition + 1
+            Log.i(TAG, "changeSong: nextSong - $nextSong")
+            Log.i(TAG, "changeSong: songPosition - $songPosition")
+        }
+
         if (isPlaying) {
             cardViewPlayer.visibility = View.VISIBLE
         }
 
 
     }
+
+    private fun changeSong(trackPosition: Int){
+
+
+
+
+    }
+
 
     private fun setFields(){
         val currentItem = trackList[songPosition]
@@ -137,12 +184,12 @@ class HomeFragment : Fragment(), ItemOnClickListener,ServiceConnection {
         textViewCurrentArtist.text = currentItem.artistName
     }
 
-    private fun createMediaPlayer(){
+    private fun createMediaPlayer(trackPosition: Int){
         try{
             if (mediaPlayer == null) mediaPlayer = MediaPlayer()
             mediaPlayer!!.reset()
-            Log.i(TAG, "createMediaPlayer: " + trackList[songPosition].songPath)
-            mediaPlayer!!.setDataSource(trackList[songPosition].songPath)
+            Log.i(TAG, "createMediaPlayer: " + trackList[trackPosition].songPath)
+            mediaPlayer!!.setDataSource(trackList[trackPosition].songPath)
             mediaPlayer!!.prepare()
             mediaPlayer!!.start()
             isPlaying = true
@@ -177,6 +224,15 @@ class HomeFragment : Fragment(), ItemOnClickListener,ServiceConnection {
 
     override fun onServiceDisconnected(name: ComponentName?) {
         TODO("Not yet implemented")
+    }
+
+    private fun changeToMinutes(number : String): String{
+        val milliSeconds : Long = number.toLong()
+
+        val minutes = milliSeconds / (1000 * 60)
+        val seconds = milliSeconds / 1000 % 60
+
+        return "$minutes:$seconds"
     }
 
 }

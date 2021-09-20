@@ -56,11 +56,11 @@
         android:id="@+id/card_view_player"
         android:layout_width="match_parent"
         android:layout_height="60dp"
+        android:visibility="gone"
         app:cardBackgroundColor="@color/black_coral_pearl"
         app:layout_constraintBottom_toTopOf="@id/bottom_navigation_bar"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:visibility="gone">
+        app:layout_constraintRight_toRightOf="parent">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -82,7 +82,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="18dp"
                 android:src="@drawable/ic_pause"
-                android:visibility="visible"/>
+                android:visibility="visible" />
 
             <ImageView
                 android:id="@+id/button_play"
@@ -98,9 +98,9 @@
                 android:id="@+id/button_favorite_filled"
                 android:layout_width="26dp"
                 android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="60dp"
-                android:layout_alignParentEnd="true"
                 android:src="@drawable/ic_favorites"
                 android:visibility="gone" />
 
@@ -108,39 +108,40 @@
                 android:id="@+id/button_favorite_unfilled"
                 android:layout_width="26dp"
                 android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="60dp"
-                android:layout_alignParentEnd="true"
                 android:src="@drawable/ic_favorite_border"
                 android:visibility="visible" />
 
             <TextView
+                android:id="@+id/text_view_current_song"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/text_view_current_song"
-                android:text="Song Name"
-                android:layout_toEndOf="@+id/image_view_current_song"
                 android:layout_marginStart="7dp"
+                android:layout_marginTop="9dp"
+                android:layout_toEndOf="@+id/image_view_current_song"
+                android:layout_toLeftOf="@+id/button_favorite_filled"
+                android:fontFamily="@font/delius"
+                android:maxLines="1"
+                android:text="Song Name"
                 android:textColor="@color/white_shade"
                 android:textSize="14sp"
-                android:textStyle="bold"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/delius"
-                android:maxLines="1"/>
+                android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/text_view_current_artist"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
-                android:id="@+id/text_view_current_artist"
-                android:text="Artist Name"
-                android:layout_toEndOf="@+id/image_view_current_song"
                 android:layout_below="@+id/text_view_current_song"
                 android:layout_marginStart="7dp"
+                android:layout_marginTop="1dp"
+                android:layout_toEndOf="@+id/image_view_current_song"
+                android:fontFamily="@font/delius"
+                android:text="Artist Name"
                 android:textColor="@color/white_shade"
                 android:textSize="13sp"
-                android:textStyle="bold"
-                android:layout_marginTop="1dp"
-                android:fontFamily="@font/delius" />
+                android:textStyle="bold" />
 
 
         </RelativeLayout>

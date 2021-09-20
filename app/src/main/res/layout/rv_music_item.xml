@@ -53,6 +53,22 @@
                 android:textColor="@color/white"
                 android:textSize="15sp" />
 
+            <TextView
+                android:id="@+id/text_view_song_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:layout_below="@+id/text_view_song_name"
+                android:layout_marginStart="3dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="8dp"
+                android:layout_alignParentEnd="true"
+                android:fontFamily="@font/delius"
+                android:maxLines="1"
+                android:text="Song Duration"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+
+
         </RelativeLayout>
 
 

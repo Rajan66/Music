@@ -35,6 +35,7 @@ class TrackRVAdapter(private var trackList: ArrayList<Track>, var context: Conte
         Log.i(TAG, "onBindViewHolder: " + currentItem.artistName)
         holder.songName.text = currentItem.songName
         Log.i(TAG, "onBindViewHolder: " + currentItem.songName)
+        holder.songDuration.text = currentItem.duration
         Glide.with(context)
             .load(uri)
             .centerCrop()
@@ -57,6 +58,7 @@ class TrackRVAdapter(private var trackList: ArrayList<Track>, var context: Conte
         val artistName: TextView = itemView.findViewById(R.id.text_view_artist_name)
         val albumImage: ImageView = itemView.findViewById(R.id.image_view_song)
         val cardView: CardView = itemView.findViewById(R.id.card_view_music)
+        val songDuration: TextView = itemView.findViewById(R.id.text_view_song_duration)
 
     }
 }
