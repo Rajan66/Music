@@ -1,5 +1,6 @@
 package com.example.musicplayer.fragments
 
+import android.app.Notification.VISIBILITY_PUBLIC
 import android.content.ComponentName
 import android.content.ServiceConnection
 import android.database.Cursor
@@ -75,23 +76,6 @@ class HomeFragment : Fragment(), ItemOnClickListener,ServiceConnection {
         } else {
             Toast.makeText(requireContext(), "No songs to play.... lol", Toast.LENGTH_LONG).show()
         }
-//
-//        var notification = NotificationCompat.Builder(context, CHANNEL_ID)
-//            // Show controls on lock screen even when user hides sensitive content.
-//            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-//            .setSmallIcon(R.drawable.ic_stat_player)
-//            // Add media control buttons that invoke intents in your media service
-//            .addAction(R.drawable.ic_prev, "Previous", prevPendingIntent) // #0
-//            .addAction(R.drawable.ic_pause, "Pause", pausePendingIntent) // #1
-//            .addAction(R.drawable.ic_next, "Next", nextPendingIntent) // #2
-//            // Apply the media style template
-//            .setStyle(MediaNotificationCompat.MediaStyle()
-//                .setShowActionsInCompactView(1 /* #1: pause button \*/)
-//                .setMediaSession(mediaSession.getSessionToken()))
-//            .setContentTitle("Wonderful music")
-//            .setContentText("My Awesome Band")
-//            .setLargeIcon(trackList[songPosition].)
-//            .build()
     }
 
     private fun getTrackList():ArrayList<Track>{
@@ -164,9 +148,6 @@ class HomeFragment : Fragment(), ItemOnClickListener,ServiceConnection {
     }
 
     private fun changeSong(trackPosition: Int){
-
-
-
 
     }
 
