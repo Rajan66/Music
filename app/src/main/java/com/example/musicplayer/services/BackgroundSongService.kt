@@ -21,7 +21,7 @@ class BackgroundSongService : Service() {
     override fun onCreate() {
         super.onCreate()
         player.isLooping = true // Set looping
-        player.setVolume(90f, 90f)
+        player.setVolume(100f, 100f)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -35,8 +35,8 @@ class BackgroundSongService : Service() {
         player.release()
     }
     inner class MyBinder: Binder(){
-        fun currentService(){
-//            return this@BackgroundSongService
+        fun currentService(): BackgroundSongService{
+            return this@BackgroundSongService
         }
     }
 }
