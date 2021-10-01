@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
@@ -33,17 +35,21 @@ class MainActivity : AppCompatActivity() {
     lateinit var bottomNavigationView: BottomNavigationView
 
 
-    companion object {
+    companion object{
         lateinit var cardViewPlayer: CardView
-        @SuppressLint("StaticFieldLeak")
+
         lateinit var imageViewCurrentSong: ImageView
-        @SuppressLint("StaticFieldLeak")
+
         lateinit var buttonPause: ImageView
-        @SuppressLint("StaticFieldLeak")
+
         lateinit var buttonPlay: ImageView
-        @SuppressLint("StaticFieldLeak")
+
         lateinit var textViewCurrentSong : TextView
+
         lateinit var textViewCurrentArtist : TextView
+
+//        lateinit var trackProgressBar : ProgressBar
+        lateinit var trackSeekbar : SeekBar
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +62,8 @@ class MainActivity : AppCompatActivity() {
         imageViewCurrentSong = findViewById(R.id.image_view_current_song)
         textViewCurrentArtist = findViewById(R.id.text_view_current_artist)
         textViewCurrentSong = findViewById(R.id.text_view_current_song)
+//        trackProgressBar = findViewById(R.id.track_progress_bar)
+        trackSeekbar = findViewById(R.id.track_seek_bar)
 
         getPermit()
         displayFragment()

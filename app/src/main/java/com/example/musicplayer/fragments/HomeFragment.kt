@@ -7,6 +7,7 @@ import android.database.Cursor
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.os.IBinder
 import android.provider.MediaStore
 import android.util.Log
@@ -17,6 +18,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC
+import androidx.core.view.isVisible
 import androidx.media.app.NotificationCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -27,13 +29,15 @@ import com.example.musicplayer.MainActivity.Companion.cardViewPlayer
 import com.example.musicplayer.MainActivity.Companion.imageViewCurrentSong
 import com.example.musicplayer.MainActivity.Companion.textViewCurrentArtist
 import com.example.musicplayer.MainActivity.Companion.textViewCurrentSong
+//import com.example.musicplayer.MainActivity.Companion.trackProgressBar
+import com.example.musicplayer.MainActivity.Companion.trackSeekbar
 import com.example.musicplayer.R
 import com.example.musicplayer.adapters.TrackRVAdapter
 import com.example.musicplayer.services.BackgroundSongService
 import com.example.musicplayer.utils.ItemOnClickListener
 import com.example.musicplayer.utils.Track
 import java.lang.Exception
-import java.util.concurrent.TimeUnit
+
 
 class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
 
@@ -48,6 +52,9 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
     private var isPlaying: Boolean = false
     private var nextSong: Int = 0
     private var prevSong: Int = 0
+
+    private lateinit var runnable: Runnable
+    private lateinit var handler: Handler
 
     companion object Player {
         private var mediaPlayer: MediaPlayer? = null
@@ -138,39 +145,37 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
         nextSong = songPosition + 1
         prevSong = songPosition - 1
 
-
         setFields(songPosition)
         stopSong()
         playSong()
+
         createMediaPlayer(songPosition)
+        changeSong()
+        updateProgressBar()
         Log.i(TAG, "onClickListener: position when clicked- $songPosition")
 
-
-            mediaPlayer!!.setOnCompletionListener {
-                if (songPosition != trackList.size-1) {
-                    createMediaPlayer(nextSong)
-                    setFields(nextSong)
-
-                    this.songPosition = nextSong
-                    nextSong += 1
-//                Log.i(TAG, "changeSong: nextSong - $nextSong")
-                    Log.i(TAG, "onClickListener, songPosition - $songPosition")
-                } else {
-
-                    Log.i(TAG, "onClickListener: song stopped, position : $songPosition")
-                    onSongCompletion()
-                }
-            }
 
         if (isPlaying) {
             cardViewPlayer.visibility = View.VISIBLE
         }
-
-
     }
 
-    private fun changeSong(trackPosition: Int) {
+    private fun changeSong() {
+        mediaPlayer!!.setOnCompletionListener {
+            if (songPosition != trackList.size - 1) {
+                createMediaPlayer(nextSong)
+                setFields(nextSong)
+                trackSeekbar.progress = 0
 
+                this.songPosition = nextSong
+                nextSong += 1
+//                Log.i(TAG, "changeSong: nextSong - $nextSong")
+                Log.i(TAG, "onClickListener, songPosition - $songPosition")
+            } else {
+                Log.i(TAG, "onClickListener: song stopped, position : $songPosition")
+                onSongCompletion()
+            }
+        }
     }
 
 
@@ -212,7 +217,7 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
         })
     }
 
-    private fun onSongCompletion(){
+    private fun onSongCompletion() {
         mediaPlayer!!.pause()
         buttonPause.visibility = View.GONE
         buttonPlay.visibility = View.VISIBLE
@@ -228,6 +233,26 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
         })
     }
 
+
+    private fun updateProgressBar() {
+        handler = Handler()
+
+        runnable = Runnable {
+            if (mediaPlayer != null) {
+                trackSeekbar.visibility = View.VISIBLE
+                trackSeekbar.max = mediaPlayer!!.duration
+                val mCurrentPosition: Int = mediaPlayer!!.currentPosition
+                Log.i(TAG, "updateProgressBar, mCurrentPosition: $mCurrentPosition")
+                Log.i(TAG, "updateProgressBar, Duration: " + trackSeekbar.max)
+                trackSeekbar.progress = mCurrentPosition
+
+                handler.postDelayed(runnable, 0)
+            }
+        }
+        handler.postDelayed(runnable, 0)
+    }
+
+
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         TODO("Not yet implemented")
     }
@@ -242,7 +267,17 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
         val minutes = milliSeconds / (1000 * 60)
         val seconds = milliSeconds / 1000 % 60
 
-        return "$minutes:$seconds"
+        var mins = minutes.toString()
+        var secs = seconds.toString()
+        if(mins.length < 2){
+            mins = "0$mins"
+        }
+        if(secs.length < 2){
+            secs = "0$secs"
+        }
+
+        return "$mins:$secs"
     }
+
 
 }

@@ -120,8 +120,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="7dp"
                 android:layout_marginTop="9dp"
+                android:layout_toStartOf="@+id/button_favorite_unfilled"
                 android:layout_toEndOf="@+id/image_view_current_song"
-                android:layout_toLeftOf="@+id/button_favorite_filled"
                 android:fontFamily="@font/delius"
                 android:maxLines="1"
                 android:text="Song Name"
@@ -143,10 +143,34 @@
                 android:textSize="13sp"
                 android:textStyle="bold" />
 
+<!--            <ProgressBar-->
+<!--                android:id="@+id/track_progress_bar"-->
+<!--                style="@style/Widget.AppCompat.ProgressBar.Horizontal"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="1dp"-->
+<!--                android:layout_alignParentBottom="true"-->
+<!--                android:layout_marginLeft="5dp"-->
+<!--                android:layout_marginRight="5dp"-->
+<!--                android:indeterminate="false"-->
+<!--                android:progress="0"-->
+<!--                android:visibility="gone" />-->
+            <SeekBar
+                android:id="@+id/track_seek_bar"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:indeterminate="false"
+                android:progress="0"
+                android:visibility="gone" />
+
 
         </RelativeLayout>
-
     </androidx.cardview.widget.CardView>
+
+
 
 
     <FrameLayout
