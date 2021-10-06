@@ -2,6 +2,7 @@ package com.example.musicplayer.fragments
 
 import android.app.Notification.VISIBILITY_PUBLIC
 import android.content.ComponentName
+import android.content.Intent
 import android.content.ServiceConnection
 import android.database.Cursor
 import android.media.MediaPlayer
@@ -31,6 +32,7 @@ import com.example.musicplayer.MainActivity.Companion.textViewCurrentArtist
 import com.example.musicplayer.MainActivity.Companion.textViewCurrentSong
 //import com.example.musicplayer.MainActivity.Companion.trackProgressBar
 import com.example.musicplayer.MainActivity.Companion.trackSeekbar
+import com.example.musicplayer.MediaPlayerActivity
 import com.example.musicplayer.R
 import com.example.musicplayer.adapters.TrackRVAdapter
 import com.example.musicplayer.services.BackgroundSongService
@@ -55,6 +57,7 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
 
     private lateinit var runnable: Runnable
     private lateinit var handler: Handler
+
 
     companion object Player {
         private var mediaPlayer: MediaPlayer? = null
@@ -83,6 +86,12 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
         } else {
             Toast.makeText(requireContext(), "No songs to play.... lol", Toast.LENGTH_LONG).show()
         }
+
+        cardViewPlayer.setOnClickListener(View.OnClickListener {
+            val intent = Intent(requireActivity(),MediaPlayerActivity::class.java)
+            startActivity(intent)
+            requireActivity().overridePendingTransition(R.anim.bottom_up, R.anim.nothing)
+        })
     }
 
     private fun getTrackList(): ArrayList<Track> {

@@ -7,24 +7,27 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.example.musicplayer.adapters.TrackRVAdapter
+
 import com.example.musicplayer.fragments.FavoriteFragment
 import com.example.musicplayer.fragments.HomeFragment
+
 import com.example.musicplayer.fragments.SettingFragment
-import com.example.musicplayer.utils.ItemOnClickListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import java.util.jar.Manifest
+import java.security.AccessController.getContext
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -48,8 +51,9 @@ class MainActivity : AppCompatActivity() {
 
         lateinit var textViewCurrentArtist : TextView
 
-//        lateinit var trackProgressBar : ProgressBar
         lateinit var trackSeekbar : SeekBar
+
+        lateinit var hiddenPanel : ViewGroup
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +66,6 @@ class MainActivity : AppCompatActivity() {
         imageViewCurrentSong = findViewById(R.id.image_view_current_song)
         textViewCurrentArtist = findViewById(R.id.text_view_current_artist)
         textViewCurrentSong = findViewById(R.id.text_view_current_song)
-//        trackProgressBar = findViewById(R.id.track_progress_bar)
         trackSeekbar = findViewById(R.id.track_seek_bar)
 
         getPermit()
@@ -77,6 +80,7 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+
 
 
 //        var notification = NotificationCompat.Builder(context, CHANNEL_ID)

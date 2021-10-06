@@ -11,12 +11,14 @@
         android:roundIcon="@drawable/ic_music"
         android:supportsRtl="true"
         android:theme="@style/DarkTheme">
+        <activity
+            android:name=".MediaPlayerActivity"
+            android:exported="true" />
 
         <service
             android:name=".services.BackgroundSongService"
             android:enabled="true"
-            android:exported="true">
-        </service>
+            android:exported="true"></service>
 
         <activity
             android:name=".MainActivity"

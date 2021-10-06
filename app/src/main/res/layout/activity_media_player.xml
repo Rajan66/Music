@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black_shade"
+    android:theme="@style/DarkTheme"
+    tools:context=".MediaPlayerActivity">
+
+    <ImageView
+        android:id="@+id/media_down_arrow"
+        android:layout_width="38dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="3dp"
+        android:src="@drawable/ic_down_arrow"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <ImageView
+        android:id="@+id/image_view_albumArt"
+        android:layout_width="match_parent"
+        android:layout_height="320dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="35dp"
+        android:layout_marginBottom="50dp"
+        android:src="@color/teal_200"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/media_down_arrow" />
+
+
+    <SeekBar
+        android:id="@+id/media_seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="13dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="13dp"
+        android:padding="3dp"
+        android:theme="@style/MySeekBar"
+        app:layout_constraintBottom_toTopOf="@id/media_items_rv"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/media_track_details_rv" />
+
+    <RelativeLayout
+        android:id="@+id/media_track_details_rv"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintBottom_toTopOf="@id/media_seekbar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_view_albumArt">
+
+        <TextView
+            android:id="@+id/media_current_song"
+            android:layout_width="180dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="28dp"
+
+            android:maxLines="1"
+            android:padding="1dp"
+            android:text="Current Song"
+            android:textColor="@color/white_shade"
+            android:textSize="23sp" />
+
+        <TextView
+            android:id="@+id/media_current_artist"
+            android:layout_width="180dp"
+            android:layout_height="32dp"
+            android:layout_below="@id/media_current_song"
+            android:layout_marginStart="28dp"
+            android:maxLines="1"
+            android:padding="1dp"
+            android:text="Current Artist"
+            android:textColor="@color/white_shade"
+            android:textSize="17sp" />
+
+        <ImageView
+            android:id="@+id/button_favorite_unfilled"
+            android:layout_width="40dp"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/ic_favorite_border"
+            android:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/button_favorite_filled"
+            android:layout_width="40dp"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/ic_favorites"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/media_items_rv"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/media_seekbar">
+
+        <ImageView
+            android:id="@+id/media_shuffle"
+            android:layout_width="34dp"
+            android:layout_height="35dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="20dp"
+            android:padding="3dp"
+            android:src="@drawable/shuffle" />
+
+
+        <ImageView
+            android:id="@+id/media_prev"
+            android:layout_width="45dp"
+            android:layout_height="55dp"
+            android:layout_marginTop="10dp"
+            android:layout_toStartOf="@id/media_pause"
+            android:layout_toEndOf="@+id/media_shuffle"
+            android:padding="3dp"
+            android:src="@drawable/ic_prev" />
+
+        <ImageView
+            android:id="@+id/media_pause"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="150dp"
+            android:padding="3dp"
+            android:src="@drawable/ic_circle_pause"
+            android:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/media_play"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerHorizontal="true"
+            android:padding="3dp"
+            android:src="@drawable/ic_circle_play"
+            android:visibility="gone" />
+
+
+        <ImageView
+            android:id="@+id/media_next"
+            android:layout_width="45dp"
+            android:layout_height="55dp"
+
+            android:layout_marginTop="10dp"
+            android:layout_toStartOf="@+id/media_loop"
+            android:layout_toEndOf="@id/media_pause"
+            android:padding="3dp"
+            android:src="@drawable/ic_next" />
+
+        <ImageView
+            android:id="@+id/media_loop"
+            android:layout_width="34dp"
+            android:layout_height="35dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="25dp"
+            android:padding="3dp"
+            android:src="@drawable/loop" />
+
+
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
