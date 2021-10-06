@@ -1,6 +1,5 @@
 package com.example.musicplayer.fragments
 
-import android.app.Notification.VISIBILITY_PUBLIC
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
@@ -17,20 +16,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.cardview.widget.CardView
-import androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC
-import androidx.core.view.isVisible
-import androidx.media.app.NotificationCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.musicplayer.MainActivity
 import com.example.musicplayer.MainActivity.Companion.buttonPause
 import com.example.musicplayer.MainActivity.Companion.buttonPlay
 import com.example.musicplayer.MainActivity.Companion.cardViewPlayer
 import com.example.musicplayer.MainActivity.Companion.imageViewCurrentSong
 import com.example.musicplayer.MainActivity.Companion.textViewCurrentArtist
 import com.example.musicplayer.MainActivity.Companion.textViewCurrentSong
-//import com.example.musicplayer.MainActivity.Companion.trackProgressBar
 import com.example.musicplayer.MainActivity.Companion.trackSeekbar
 import com.example.musicplayer.MediaPlayerActivity
 import com.example.musicplayer.R
@@ -82,7 +75,7 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
         if (trackList != null) {
             val adapter = TrackRVAdapter(trackList, requireContext(), this)
             trackRecyclerView.adapter = adapter
-            Log.i(TAG, "onViewCreated: Not Null $adapter")
+            Log.i(TAG, "onViewCreated: Track Size " + trackList.size)
         } else {
             Toast.makeText(requireContext(), "No songs to play.... lol", Toast.LENGTH_LONG).show()
         }
@@ -96,11 +89,9 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
 
     private fun getTrackList(): ArrayList<Track> {
         val songList: ArrayList<Track> = ArrayList()
-        var songPath: ArrayList<String> = ArrayList()
         val allSongUri: Uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
 
         val projection: Array<String> = arrayOf(
-            MediaStore.Audio.Media.TRACK,
             MediaStore.Audio.Media.TITLE,
             MediaStore.Audio.Media._ID,
             MediaStore.Audio.Media.ARTIST,
@@ -108,8 +99,10 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
             MediaStore.Audio.Media.DURATION
         )
 
+        val selection = MediaStore.Audio.Media.IS_MUSIC + " != 0"
+
         val cursor: Cursor? =
-            requireContext().contentResolver.query(allSongUri, projection, null, null, null)
+            requireContext().contentResolver.query(allSongUri, projection, selection, null, null)
 
 
         try {
@@ -131,6 +124,7 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
                         Log.i(TAG, "getTrackList, Song Name: $songName")
                         Log.i(TAG, "getTrackList, Artist Name: $artistName")
                         Log.i(TAG, "getTrackList, Artist Name: $duration")
+                        Log.i(TAG, "getTrackList, Song Path: $songPath")
 
 
                         val songInfo =
@@ -139,6 +133,7 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
 
                     } while (cursor.moveToNext())
                 }
+                cursor.close()
             }
         } catch (e: Exception) {
             e.printStackTrace()
