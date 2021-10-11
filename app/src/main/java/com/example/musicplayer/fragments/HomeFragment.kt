@@ -15,12 +15,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.musicplayer.MainActivity
 import com.example.musicplayer.MainActivity.Companion.buttonPause
 import com.example.musicplayer.MainActivity.Companion.buttonPlay
 import com.example.musicplayer.MainActivity.Companion.cardViewPlayer
+import com.example.musicplayer.MainActivity.Companion.favoriteFilled
+import com.example.musicplayer.MainActivity.Companion.favoriteUnFilled
 import com.example.musicplayer.MainActivity.Companion.imageViewCurrentSong
 import com.example.musicplayer.MainActivity.Companion.textViewCurrentArtist
 import com.example.musicplayer.MainActivity.Companion.textViewCurrentSong
@@ -81,7 +86,7 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
         }
 
         cardViewPlayer.setOnClickListener(View.OnClickListener {
-            val intent = Intent(requireActivity(),MediaPlayerActivity::class.java)
+            val intent = Intent(requireActivity(), MediaPlayerActivity::class.java)
             startActivity(intent)
             requireActivity().overridePendingTransition(R.anim.bottom_up, R.anim.nothing)
         })
@@ -103,6 +108,7 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
 
         val cursor: Cursor? =
             requireContext().contentResolver.query(allSongUri, projection, selection, null, null)
+        //TODO implement sort feature
 
 
         try {
@@ -150,12 +156,17 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
         prevSong = songPosition - 1
 
         setFields(songPosition)
-        stopSong()
-        playSong()
+        playSong(buttonPlay, buttonPause)
+        stopSong(buttonPlay, buttonPause)
+        ifPlaying(buttonPlay, buttonPause)
+
+
+        favoriteClicked()
+        favoriteRemoved()
 
         createMediaPlayer(songPosition)
         changeSong()
-        updateProgressBar()
+        updateProgressBar(trackSeekbar)
         Log.i(TAG, "onClickListener: position when clicked- $songPosition")
 
 
@@ -164,7 +175,7 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
         }
     }
 
-    private fun changeSong() {
+    fun changeSong() {
         mediaPlayer!!.setOnCompletionListener {
             if (songPosition != trackList.size - 1) {
                 createMediaPlayer(nextSong)
@@ -206,49 +217,77 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
             mediaPlayer!!.start()
             isPlaying = true
             buttonPause.visibility = View.VISIBLE
-            buttonPlay.visibility = View.GONE
+            buttonPlay.visibility = View.INVISIBLE
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    private fun stopSong() {
+    fun ifPlaying(buttonPlay:ImageView, buttonPause: ImageView){
+        if(isPlaying){
+            buttonPause.visibility = View.VISIBLE
+            buttonPlay.visibility = View.INVISIBLE
+        }
+        else{
+            buttonPause.visibility = View.INVISIBLE
+            buttonPlay.visibility = View.VISIBLE
+        }
+    }
+
+    fun stopSong(buttonPlay: ImageView, buttonPause: ImageView) {
         buttonPause.setOnClickListener(View.OnClickListener {
             mediaPlayer!!.pause()
-            buttonPause.visibility = View.GONE
-            buttonPlay.visibility = View.VISIBLE
+            ifPlaying(buttonPlay, buttonPause)
+//            buttonPause.visibility = View.INVISIBLE
+//            buttonPlay.visibility = View.VISIBLE
             isPlaying = false
         })
     }
 
-    private fun onSongCompletion() {
+    fun onSongCompletion() {
         mediaPlayer!!.pause()
-        buttonPause.visibility = View.GONE
+        buttonPause.visibility = View.INVISIBLE
         buttonPlay.visibility = View.VISIBLE
         isPlaying = false
     }
 
-    private fun playSong() {
+    fun playSong(buttonPlay: ImageView, buttonPause: ImageView) {
         buttonPlay.setOnClickListener(View.OnClickListener {
             mediaPlayer!!.start()
-            buttonPlay.visibility = View.GONE
-            buttonPause.visibility = View.VISIBLE
+//            buttonPlay.visibility = View.INVISIBLE
+//            buttonPause.visibility = View.VISIBLE
+            ifPlaying(buttonPlay, buttonPause)
             isPlaying = true
+        })
+        //TODO play and pause button arent consistent
+    }
+
+    private fun favoriteClicked() {
+        favoriteUnFilled.setOnClickListener(View.OnClickListener {
+            favoriteUnFilled.visibility = View.INVISIBLE
+            favoriteFilled.visibility = View.VISIBLE
+        })
+    }
+
+    private fun favoriteRemoved() {
+        favoriteFilled.setOnClickListener(View.OnClickListener {
+            favoriteUnFilled.visibility = View.VISIBLE
+            favoriteFilled.visibility = View.INVISIBLE
         })
     }
 
 
-    private fun updateProgressBar() {
+    fun updateProgressBar(seekBar: SeekBar) {
         handler = Handler()
 
         runnable = Runnable {
             if (mediaPlayer != null) {
-                trackSeekbar.visibility = View.VISIBLE
-                trackSeekbar.max = mediaPlayer!!.duration
+                seekBar.visibility = View.VISIBLE
+                seekBar.max = mediaPlayer!!.duration
                 val mCurrentPosition: Int = mediaPlayer!!.currentPosition
                 Log.i(TAG, "updateProgressBar, mCurrentPosition: $mCurrentPosition")
-                Log.i(TAG, "updateProgressBar, Duration: " + trackSeekbar.max)
-                trackSeekbar.progress = mCurrentPosition
+                Log.i(TAG, "updateProgressBar, Duration: " + seekBar.max)
+                seekBar.progress = mCurrentPosition
 
                 handler.postDelayed(runnable, 0)
             }
@@ -273,10 +312,10 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
 
         var mins = minutes.toString()
         var secs = seconds.toString()
-        if(mins.length < 2){
+        if (mins.length < 2) {
             mins = "0$mins"
         }
-        if(secs.length < 2){
+        if (secs.length < 2) {
             secs = "0$secs"
         }
 

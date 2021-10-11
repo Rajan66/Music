@@ -35,10 +35,10 @@ class MainActivity : AppCompatActivity() {
     private val favoriteFragment = FavoriteFragment()
     private val settingFragment = SettingFragment()
 
-    lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var bottomNavigationView: BottomNavigationView
 
 
-    companion object{
+    companion object {
         lateinit var cardViewPlayer: CardView
 
         lateinit var imageViewCurrentSong: ImageView
@@ -54,7 +54,13 @@ class MainActivity : AppCompatActivity() {
         lateinit var trackSeekbar : SeekBar
 
         lateinit var hiddenPanel : ViewGroup
+
+        lateinit var favoriteUnFilled :ImageView
+
+        lateinit var favoriteFilled : ImageView
     }
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +73,8 @@ class MainActivity : AppCompatActivity() {
         textViewCurrentArtist = findViewById(R.id.text_view_current_artist)
         textViewCurrentSong = findViewById(R.id.text_view_current_song)
         trackSeekbar = findViewById(R.id.track_seek_bar)
+        favoriteFilled = findViewById(R.id.button_favorite_filled)
+        favoriteUnFilled = findViewById(R.id.button_favorite_unfilled)
 
         getPermit()
         displayFragment()
@@ -99,6 +107,7 @@ class MainActivity : AppCompatActivity() {
 //            .setContentText("My Awesome Band")
 //            .setLargeIcon(albumArtBitmap)
 //            .build()
+        //TODO implement notification feature
     }
 
 
