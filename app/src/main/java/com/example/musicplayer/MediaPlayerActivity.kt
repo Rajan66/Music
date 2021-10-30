@@ -1,13 +1,20 @@
 package com.example.musicplayer
 
+import android.nfc.Tag
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
 import com.example.musicplayer.fragments.HomeFragment
+import com.example.musicplayer.fragments.HomeFragment.Companion.playerService
+import com.example.musicplayer.services.BackgroundSongService
+
+private const val TAG = "MediaPlayerActivity"
 
 class MediaPlayerActivity : AppCompatActivity() {
 
@@ -25,8 +32,10 @@ class MediaPlayerActivity : AppCompatActivity() {
     private lateinit var songName: TextView
     private lateinit var favoriteFilled: ImageView
     private lateinit var favoriteUnFilled: ImageView
-
     private lateinit var seekBar: SeekBar
+
+    private lateinit var runnable: Runnable
+    private lateinit var handler: Handler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,11 +43,18 @@ class MediaPlayerActivity : AppCompatActivity() {
 
         init()
         homeFragment.updateProgressBar(seekBar)
-        homeFragment.playSong(playButton,pauseButton)
-        homeFragment.stopSong(playButton,pauseButton)
-        homeFragment.ifPlaying(playButton, pauseButton)
+        homeFragment.playSong(pauseButton,playButton)
+        homeFragment.stopSong(pauseButton,playButton)
 
-
+        if(playerService!!.mediaPlayer!!.isPlaying){
+            pauseButton.visibility = View.VISIBLE
+            playButton.visibility = View.INVISIBLE
+        }
+        else{
+            pauseButton.visibility = View.INVISIBLE
+            playButton.visibility = View.VISIBLE
+        }
+//
         backButton.setOnClickListener(View.OnClickListener { onBackPressed() })
 
 
@@ -64,4 +80,6 @@ class MediaPlayerActivity : AppCompatActivity() {
         super.onBackPressed()
         overridePendingTransition(R.anim.nothing, R.anim.bottom_down)
     }
+
+
 }

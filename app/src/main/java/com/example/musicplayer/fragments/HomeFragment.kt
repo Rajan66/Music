@@ -1,6 +1,7 @@
 package com.example.musicplayer.fragments
 
 import android.content.ComponentName
+import android.content.Context.BIND_AUTO_CREATE
 import android.content.Intent
 import android.content.ServiceConnection
 import android.database.Cursor
@@ -38,17 +39,15 @@ import com.example.musicplayer.utils.ItemOnClickListener
 import com.example.musicplayer.utils.Track
 import java.lang.Exception
 
+private const val TAG = "HomeFragment"
 
 class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
 
-    private var trackList: ArrayList<Track> = ArrayList()
+
     private lateinit var trackRecyclerView: RecyclerView
 
-    private val TAG = "HomeFragment"
 
-    private var playerService: BackgroundSongService? = null
 
-    private var songPosition: Int = 0
     private var isPlaying: Boolean = false
     private var nextSong: Int = 0
     private var prevSong: Int = 0
@@ -56,13 +55,20 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
     private lateinit var runnable: Runnable
     private lateinit var handler: Handler
 
-
-    companion object Player {
-        private var mediaPlayer: MediaPlayer? = null
+    companion object {
+        var playerService: BackgroundSongService? = null
+        var trackList: ArrayList<Track> = ArrayList()
+        var songPosition: Int = 0
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //For starting service
+        val intent = Intent(requireActivity(), BackgroundSongService::class.java)
+        requireActivity().bindService(intent, this, BIND_AUTO_CREATE)
+        requireActivity().startService(intent)
+//        val intent1 = Intent("com.android.ServiceStopped")
+//        sendBroadcast(intent1)
     }
 
     override fun onCreateView(
@@ -70,13 +76,15 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+
+
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         trackRecyclerView = view.findViewById(R.id.rv_music)
-        trackList = getTrackList()
+        trackList = getTrack()
         if (trackList != null) {
             val adapter = TrackRVAdapter(trackList, requireContext(), this)
             trackRecyclerView.adapter = adapter
@@ -87,12 +95,12 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
 
         cardViewPlayer.setOnClickListener(View.OnClickListener {
             val intent = Intent(requireActivity(), MediaPlayerActivity::class.java)
-            startActivity(intent)
             requireActivity().overridePendingTransition(R.anim.bottom_up, R.anim.nothing)
+            startActivity(intent)
         })
     }
 
-    private fun getTrackList(): ArrayList<Track> {
+    fun getTrack(): ArrayList<Track> {
         val songList: ArrayList<Track> = ArrayList()
         val allSongUri: Uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
 
@@ -151,19 +159,19 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
     override fun onClickListener(position: Int) {
         Toast.makeText(activity, trackList[position].songName + " playing!", Toast.LENGTH_SHORT)
             .show()
+
         songPosition = position
         nextSong = songPosition + 1
         prevSong = songPosition - 1
 
         setFields(songPosition)
-        playSong(buttonPlay, buttonPause)
-        stopSong(buttonPlay, buttonPause)
-        ifPlaying(buttonPlay, buttonPause)
-
+        playSong(buttonPause, buttonPlay)
+        stopSong(buttonPause, buttonPlay)
 
         favoriteClicked()
         favoriteRemoved()
 
+        playerService!!.showNotification()
         createMediaPlayer(songPosition)
         changeSong()
         updateProgressBar(trackSeekbar)
@@ -175,14 +183,14 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
         }
     }
 
-    fun changeSong() {
-        mediaPlayer!!.setOnCompletionListener {
+    private fun changeSong() {
+        playerService!!.mediaPlayer!!.setOnCompletionListener {
             if (songPosition != trackList.size - 1) {
                 createMediaPlayer(nextSong)
                 setFields(nextSong)
                 trackSeekbar.progress = 0
 
-                this.songPosition = nextSong
+                songPosition = nextSong
                 nextSong += 1
 //                Log.i(TAG, "changeSong: nextSong - $nextSong")
                 Log.i(TAG, "onClickListener, songPosition - $songPosition")
@@ -209,55 +217,55 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
 
     private fun createMediaPlayer(trackPosition: Int) {
         try {
-            if (mediaPlayer == null) mediaPlayer = MediaPlayer()
-            mediaPlayer!!.reset()
+            if (playerService!!.mediaPlayer == null) playerService!!.mediaPlayer = MediaPlayer()
+            playerService!!.mediaPlayer!!.reset()
             Log.i(TAG, "createMediaPlayer: " + trackList[trackPosition].songPath)
-            mediaPlayer!!.setDataSource(trackList[trackPosition].songPath)
-            mediaPlayer!!.prepare()
-            mediaPlayer!!.start()
+            playerService!!.mediaPlayer!!.setDataSource(trackList[trackPosition].songPath)
+            playerService!!.mediaPlayer!!.prepare()
+            playerService!!.mediaPlayer!!.start()
             isPlaying = true
-            buttonPause.visibility = View.VISIBLE
-            buttonPlay.visibility = View.INVISIBLE
+            ifPlaying()
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    fun ifPlaying(buttonPlay:ImageView, buttonPause: ImageView){
-        if(isPlaying){
-            buttonPause.visibility = View.VISIBLE
-            buttonPlay.visibility = View.INVISIBLE
-        }
-        else{
-            buttonPause.visibility = View.INVISIBLE
-            buttonPlay.visibility = View.VISIBLE
+    private fun ifPlaying() {
+        if (playerService != null) {
+            if (playerService!!.mediaPlayer!!.isPlaying) {
+                buttonPause.visibility = View.VISIBLE
+                buttonPlay.visibility = View.INVISIBLE
+            } else {
+                buttonPause.visibility = View.INVISIBLE
+                buttonPlay.visibility = View.VISIBLE
+            }
         }
     }
 
-    fun stopSong(buttonPlay: ImageView, buttonPause: ImageView) {
+    fun stopSong(buttonPause:ImageView, buttonPlay:ImageView) {
         buttonPause.setOnClickListener(View.OnClickListener {
-            mediaPlayer!!.pause()
-            ifPlaying(buttonPlay, buttonPause)
-//            buttonPause.visibility = View.INVISIBLE
-//            buttonPlay.visibility = View.VISIBLE
+            playerService!!.mediaPlayer!!.pause()
+            buttonPlay.visibility = View.VISIBLE
+            buttonPause.visibility = View.INVISIBLE
             isPlaying = false
+            ifPlaying()
         })
     }
 
-    fun onSongCompletion() {
-        mediaPlayer!!.pause()
+    private fun onSongCompletion() {
+        playerService!!.mediaPlayer!!.pause()
         buttonPause.visibility = View.INVISIBLE
         buttonPlay.visibility = View.VISIBLE
         isPlaying = false
     }
 
-    fun playSong(buttonPlay: ImageView, buttonPause: ImageView) {
+    fun playSong(buttonPause:ImageView, buttonPlay:ImageView) {
         buttonPlay.setOnClickListener(View.OnClickListener {
-            mediaPlayer!!.start()
-//            buttonPlay.visibility = View.INVISIBLE
-//            buttonPause.visibility = View.VISIBLE
-            ifPlaying(buttonPlay, buttonPause)
+            playerService!!.mediaPlayer!!.start()
+            buttonPlay.visibility = View.INVISIBLE
+            buttonPause.visibility = View.VISIBLE
             isPlaying = true
+            ifPlaying()
         })
         //TODO play and pause button arent consistent
     }
@@ -281,10 +289,10 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
         handler = Handler()
 
         runnable = Runnable {
-            if (mediaPlayer != null) {
+            if (playerService!!.mediaPlayer != null) {
                 seekBar.visibility = View.VISIBLE
-                seekBar.max = mediaPlayer!!.duration
-                val mCurrentPosition: Int = mediaPlayer!!.currentPosition
+                seekBar.max = playerService!!.mediaPlayer!!.duration
+                val mCurrentPosition: Int = playerService!!.mediaPlayer!!.currentPosition
                 Log.i(TAG, "updateProgressBar, mCurrentPosition: $mCurrentPosition")
                 Log.i(TAG, "updateProgressBar, Duration: " + seekBar.max)
                 seekBar.progress = mCurrentPosition
@@ -297,11 +305,14 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
 
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        TODO("Not yet implemented")
+        val binder = service as BackgroundSongService.MyBinder
+        playerService = binder.currentService()
+
+        //TODO app crashes: IndexOutOfBounds
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {
-        TODO("Not yet implemented")
+        playerService = null
     }
 
     private fun changeToMinutes(number: String): String {
@@ -321,6 +332,4 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
 
         return "$mins:$secs"
     }
-
-
 }
