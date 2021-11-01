@@ -24,45 +24,27 @@ import com.example.musicplayer.utils.ApplicationUtil.Companion.NEXT
 import com.example.musicplayer.utils.ApplicationUtil.Companion.PREV
 import com.example.musicplayer.utils.ApplicationUtil.Companion.PlAY
 import com.example.musicplayer.utils.Track
+import android.app.ActivityManager
+import android.content.Context
+import com.example.musicplayer.fragments.HomeFragment.Companion.playerService
+
 
 private const val TAG = "BackgroundSongService"
 
 class BackgroundSongService : Service() {
 
-    private var player: MediaPlayer = MediaPlayer()
     private var myBinder = MyBinder()
     var mediaPlayer: MediaPlayer? = null
     private lateinit var mediaSession: MediaSessionCompat
-    private lateinit var songList: ArrayList<Track>
-
-    private val homeFragment = HomeFragment()
 
     override fun onBind(intent: Intent): IBinder {
-        mediaSession = MediaSessionCompat(baseContext,"Music")
+        mediaSession = MediaSessionCompat(baseContext, "Music")
         return myBinder
     }
 
-    override fun onCreate() {
-        super.onCreate()
-        player.isLooping = true // Set looping
-        player.setVolume(100f, 100f)
-    }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        player.start()
-        Log.i(TAG, "onStartCommand: Service started")
-        return super.onStartCommand(intent, flags, startId)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        player.stop()
-        player.release()
-        Log.i(TAG, "onStartCommand: Service destroyed")
-    }
-
-    inner class MyBinder: Binder(){
-        fun currentService(): BackgroundSongService{
+    inner class MyBinder : Binder() {
+        fun currentService(): BackgroundSongService {
             return this@BackgroundSongService
         }
     }
@@ -72,18 +54,26 @@ class BackgroundSongService : Service() {
             .setContentTitle(trackList[songPosition].songName)
             .setContentText(trackList[songPosition].artistName)
             .setSmallIcon(R.drawable.ic_song)
-            .setLargeIcon(BitmapFactory.decodeResource(resources,R.drawable.ic_music))
+            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_music))
             .setStyle(androidx.media.app.NotificationCompat.MediaStyle().setMediaSession(mediaSession.sessionToken))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .addAction(R.drawable.ic_prev,"Previous",null)
-            .addAction(R.drawable.ic_play,"Play",null)
-            .addAction(R.drawable.ic_next,"Next",null)
+            .addAction(R.drawable.ic_prev, "Previous", null)
+            .addAction(R.drawable.ic_play, "Play", null)
+            .addAction(R.drawable.ic_next, "Next", null)
             .build()
 
-        startForeground(10,notification)
+        startForeground(10, notification)
+    }
 
-
-
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        stopForeground(true)
+        stopSelf()
+        mediaPlayer!!.stop()
+        mediaPlayer!!.release()
+        mediaPlayer = null
+        // if i don't make the player null, then it will cause a bug in the thread in homeFragment
+        // as it still uses the player unless its null.
     }
 }

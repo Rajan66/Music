@@ -10,8 +10,12 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
+import com.bumptech.glide.Glide
+import com.example.musicplayer.adapters.TrackRVAdapter.Companion.uri
 import com.example.musicplayer.fragments.HomeFragment
 import com.example.musicplayer.fragments.HomeFragment.Companion.playerService
+import com.example.musicplayer.fragments.HomeFragment.Companion.songPosition
+import com.example.musicplayer.fragments.HomeFragment.Companion.trackList
 import com.example.musicplayer.services.BackgroundSongService
 
 private const val TAG = "MediaPlayerActivity"
@@ -42,9 +46,11 @@ class MediaPlayerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_media_player)
 
         init()
+        setData()
         homeFragment.updateProgressBar(seekBar)
         homeFragment.playSong(pauseButton,playButton)
         homeFragment.stopSong(pauseButton,playButton)
+        homeFragment.changeSong()
 
         if(playerService!!.mediaPlayer!!.isPlaying){
             pauseButton.visibility = View.VISIBLE
@@ -54,9 +60,7 @@ class MediaPlayerActivity : AppCompatActivity() {
             pauseButton.visibility = View.INVISIBLE
             playButton.visibility = View.VISIBLE
         }
-//
         backButton.setOnClickListener(View.OnClickListener { onBackPressed() })
-
 
     }
 
@@ -76,10 +80,18 @@ class MediaPlayerActivity : AppCompatActivity() {
         seekBar = findViewById(R.id.media_seekbar)
     }
 
+    private fun setData(){
+        artistName.text = trackList[songPosition].artistName
+        songName.text = trackList[songPosition].songName
+        Glide.with(this)
+            .load(uri)
+            .centerCrop()
+            .into(albumArt)
+    }
+
+
     override fun onBackPressed() {
         super.onBackPressed()
         overridePendingTransition(R.anim.nothing, R.anim.bottom_down)
     }
-
-
 }

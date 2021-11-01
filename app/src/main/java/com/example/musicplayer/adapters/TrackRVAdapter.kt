@@ -19,6 +19,10 @@ import kotlin.reflect.KFunction1
 class TrackRVAdapter(private var trackList: ArrayList<Track>, var context: Context, var clickListener: ItemOnClickListener) :
     RecyclerView.Adapter<TrackRVAdapter.TrackHolder>() {
 
+    companion object{
+        lateinit var uri: Uri
+    }
+
     private val TAG = "Adapter"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackHolder {
@@ -29,7 +33,7 @@ class TrackRVAdapter(private var trackList: ArrayList<Track>, var context: Conte
     override fun onBindViewHolder(holder: TrackHolder, position: Int) {
         val currentItem = trackList[position]
         val songId = trackList[position].songId
-        val uri: Uri = Uri.parse("content://media/external/audio/media/$songId/albumart")
+        uri = Uri.parse("content://media/external/audio/media/$songId/albumart")
 
         holder.artistName.text = currentItem.artistName
         Log.i(TAG, "onBindViewHolder: " + currentItem.artistName)

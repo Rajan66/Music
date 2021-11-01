@@ -24,7 +24,9 @@ import androidx.fragment.app.Fragment
 
 import com.example.musicplayer.fragments.FavoriteFragment
 import com.example.musicplayer.fragments.HomeFragment
+import com.example.musicplayer.fragments.HomeFragment.Companion.playerService
 import com.example.musicplayer.fragments.SettingFragment
+import com.example.musicplayer.services.BackgroundSongService
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 

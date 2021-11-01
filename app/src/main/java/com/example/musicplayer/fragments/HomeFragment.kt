@@ -34,6 +34,7 @@ import com.example.musicplayer.MainActivity.Companion.trackSeekbar
 import com.example.musicplayer.MediaPlayerActivity
 import com.example.musicplayer.R
 import com.example.musicplayer.adapters.TrackRVAdapter
+import com.example.musicplayer.adapters.TrackRVAdapter.Companion.uri
 import com.example.musicplayer.services.BackgroundSongService
 import com.example.musicplayer.utils.ItemOnClickListener
 import com.example.musicplayer.utils.Track
@@ -45,8 +46,6 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
 
 
     private lateinit var trackRecyclerView: RecyclerView
-
-
 
     private var isPlaying: Boolean = false
     private var nextSong: Int = 0
@@ -76,8 +75,6 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-
-
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -95,12 +92,12 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
 
         cardViewPlayer.setOnClickListener(View.OnClickListener {
             val intent = Intent(requireActivity(), MediaPlayerActivity::class.java)
-            requireActivity().overridePendingTransition(R.anim.bottom_up, R.anim.nothing)
             startActivity(intent)
+            requireActivity().overridePendingTransition(R.anim.bottom_up, R.anim.nothing)
         })
     }
 
-    fun getTrack(): ArrayList<Track> {
+    private fun getTrack(): ArrayList<Track> {
         val songList: ArrayList<Track> = ArrayList()
         val allSongUri: Uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
 
@@ -183,7 +180,7 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
         }
     }
 
-    private fun changeSong() {
+    fun changeSong() {
         playerService!!.mediaPlayer!!.setOnCompletionListener {
             if (songPosition != trackList.size - 1) {
                 createMediaPlayer(nextSong)
@@ -192,11 +189,11 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
 
                 songPosition = nextSong
                 nextSong += 1
-//                Log.i(TAG, "changeSong: nextSong - $nextSong")
+                Log.i(TAG, "changeSong: nextSong - $nextSong")
                 Log.i(TAG, "onClickListener, songPosition - $songPosition")
             } else {
                 Log.i(TAG, "onClickListener: song stopped, position : $songPosition")
-                onSongCompletion()
+//                onSongCompletion()
             }
         }
     }
@@ -204,8 +201,6 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
 
     private fun setFields(trackPosition: Int) {
         val currentItem = trackList[trackPosition]
-        val songId = trackList[trackPosition].songId
-        val uri: Uri = Uri.parse("content://media/external/audio/media/$songId/albumart")
         Glide.with(this)
             .load(uri)
             .centerCrop()
@@ -242,7 +237,7 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
         }
     }
 
-    fun stopSong(buttonPause:ImageView, buttonPlay:ImageView) {
+    fun stopSong(buttonPause: ImageView, buttonPlay: ImageView) {
         buttonPause.setOnClickListener(View.OnClickListener {
             playerService!!.mediaPlayer!!.pause()
             buttonPlay.visibility = View.VISIBLE
@@ -259,7 +254,7 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
         isPlaying = false
     }
 
-    fun playSong(buttonPause:ImageView, buttonPlay:ImageView) {
+    fun playSong(buttonPause: ImageView, buttonPlay: ImageView) {
         buttonPlay.setOnClickListener(View.OnClickListener {
             playerService!!.mediaPlayer!!.start()
             buttonPlay.visibility = View.INVISIBLE
@@ -301,6 +296,7 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
             }
         }
         handler.postDelayed(runnable, 0)
+
     }
 
 
@@ -312,6 +308,7 @@ class HomeFragment : Fragment(), ItemOnClickListener, ServiceConnection {
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {
+//        requireActivity().applicationContext.stopService(Intent(requireActivity(),BackgroundSongService::class.java))
         playerService = null
     }
 
